@@ -31,7 +31,7 @@ def worker(username, password):
     
     time.sleep(randint(8, 14))
 
-    if driver.find_element(By.ID, "btnJoin").is_displayed() or driver.find_element(By.ID, "btnJoin").is_displayed():
+    if driver.find_element(By.ID, "btnJoin").is_displayed() or driver.find_element(By.ID, "btnJoin").is_enabled():
         driver.find_element(By.ID, "btnJoin").click()
         print(username + " checked into class")
     else:
