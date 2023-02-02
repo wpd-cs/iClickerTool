@@ -4,7 +4,9 @@ import threading
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
-from random import randint
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from random import randint, uniform
 
 def worker(username, password):
     # Function to sign in iClicker using provided credentials and
@@ -12,11 +14,37 @@ def worker(username, password):
 
     print(username + " zombie starting")
 
+    location = dict({
+        "latitude": uniform(33.882285, 33.882349),
+        "longitude": uniform(-117.882795, -117.882754),
+        "accuracy": 100
+    })
+
     # Create incognito Google Chrome instance
-    options = webdriver.ChromeOptions()
-    options.add_argument('--incognito')
-    # options.add_argument('--headless')
-    driver = webdriver.Chrome(options=options)
+    capabilities = DesiredCapabilities().CHROME
+    chrome_options = Options()
+    chrome_options.add_argument("--incognito")
+    chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-popup-blocking")
+    # chrome_options.add_argument('--headless')
+
+    prefs = {
+        'profile.default_content_setting_values':
+        {
+            'notifications': 1,
+            'geolocation': 1
+        },
+        'profile.managed_default_content_settings':
+        {
+            'geolocation': 1
+        },
+    }
+
+    chrome_options.add_experimental_option('prefs', prefs)
+    capabilities.update(chrome_options.to_capabilities())
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.execute_cdp_cmd("Emulation.setGeolocationOverride", location)
 
     # Go to iClicker login screen
     driver.get('https://student.iclicker.com/#/login')
@@ -76,7 +104,7 @@ def worker(username, password):
 
     # Click the Sign Out button
     driver.find_element(By.XPATH, "/html/body/div[2]/div[2]/main/div[2]/ul/li[4]/button").click()
-    print(username + " clicked the signout button")
+    print(username + " clicked the sign-out button")
 
     # Allow for proper logout
     time.sleep(randint(5, 8))
