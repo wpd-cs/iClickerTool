@@ -71,7 +71,7 @@ def worker(username, password):
     print(username + " clicked into the class")
     
     # Allow random join times
-    time.sleep(randint(4, 14))
+    time.sleep(randint(8, 15))
 
     # Check if Join button is displayed
     if driver.find_element(By.ID, "btnJoin").is_displayed():
